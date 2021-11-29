@@ -56,24 +56,6 @@ Then it uses the default bukkit system for enchantment registering.
 
 It will also update all Enchantments to use the Lore to display the enchantments instead of default MC(Only if needed!). It may break other enchantment plugins, not 100% sure on that
 
-# Add it via maven
-```maven
-<repositories>
-   <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-   </repository>
-</repositories>
-
-
-
-<dependency>
-   <groupId>com.github.PerryPlaysMC</groupId>
-   <artifactId>DynamicEnchantments</artifactId>
-   <version>V1.0</version>
-</dependency>
-```
-[![](https://jitpack.io/v/PerryPlaysMC/DynamicEnchantments.svg)](https://jitpack.io/#PerryPlaysMC/DynamicEnchantments)
 
 # TO-DO?
 - [ ] Add Enchantment name coloring for rarity? (maybe, might do that one day)
