@@ -1,7 +1,6 @@
 package dev.perryplaysmc.dynamicenchantments.enchantment;
 
 import dev.perryplaysmc.dynamicenchantments.Version;
-import org.intellij.lang.annotations.Language;
 
 
 /**
@@ -13,7 +12,7 @@ import org.intellij.lang.annotations.Language;
 //DON'T YOU FRICKEN DARE MESS WITH THIS CLASS, IF YOU DO, YOU'RE BASICALLY FKED, K? JUST LEAVE IT ALONE.
 class DynamicEnchantAsString {
 
-    @Language("java")
+   // @Language("java")
     static final String DYNAMIC_ENCHANTMENT =
             "package "+DynamicEnchantAsString.class.getPackage().getName()+";"
                     + "\n\nimport org.bukkit.enchantments.Enchantment;" +
