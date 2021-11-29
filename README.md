@@ -57,6 +57,5 @@ Then it uses the default bukkit system for enchantment registering.
 It will also update all Enchantments to use the Lore to display the enchantments instead of default MC(Only if needed!). It may break other enchantment plugins, not 100% sure on that
 
 
-
 # TO-DO?
 - [ ] Add Enchantment name coloring for rarity? (maybe, might do that one day)
