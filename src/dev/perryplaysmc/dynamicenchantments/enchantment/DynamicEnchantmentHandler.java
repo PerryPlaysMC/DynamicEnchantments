@@ -61,60 +61,63 @@ public class DynamicEnchantmentHandler implements Listener {
          e.printStackTrace();
       }
       getFile = getFile1;
-      if(getFile!=null) getFile.setAccessible(true);
+      if(getFile != null) getFile.setAccessible(true);
       load(plugin);
-      new UpdateItemsThread(plugin,this);
+      new UpdateItemsThread(plugin, this);
    }
 
    public void unregisterEnchantments() {
       Method getKeyOrId = null;
       Field byIdOrKey = null;
-      try{
-         getKeyOrId=Enchantment.class.getMethod("getKey");
+      try {
+         getKeyOrId = Enchantment.class.getMethod("getKey");
          byIdOrKey = Enchantment.class.getDeclaredField("byKey");
-      }catch (Exception e1) {
-         try{
-            getKeyOrId=Enchantment.class.getMethod("getId");
+      } catch (Exception e1) {
+         try {
+            getKeyOrId = Enchantment.class.getMethod("getId");
             byIdOrKey = Enchantment.class.getDeclaredField("byId");
-         }catch (Exception ignored) {}
+         } catch (Exception ignored) {
+         }
       }
       if(getKeyOrId == null || byIdOrKey == null) return;
       getKeyOrId.setAccessible(true);
       byIdOrKey.setAccessible(true);
       try {
-         HashMap<?,?> idOrKey = (HashMap<?,?>) byIdOrKey.get(null);
+         HashMap<?, ?> idOrKey = (HashMap<?, ?>) byIdOrKey.get(null);
          Field byName = Enchantment.class.getDeclaredField("byName");
          byName.setAccessible(true);
-         HashMap<?,?> bName = (HashMap<?,?>) byName.get(null);
+         HashMap<?, ?> bName = (HashMap<?, ?>) byName.get(null);
          for(DynamicEnchantment enchantment : getEnchantments()) {
             idOrKey.remove(getKeyOrId.invoke(enchantment.getEnchantment()));
             bName.remove(enchantment.getEnchantment().getName());
          }
-      }catch (Exception e1) {
+      } catch (Exception e1) {
          e1.printStackTrace();
       }
    }
 
    //didn't want the user to have to call "unregisterEnchantments" in onDisabled :P
-   @EventHandler void onDisable(PluginDisableEvent e) {
-      if(!e.getPlugin().getName().equals(plugin.getName()))return;
+   @EventHandler
+   void onDisable(PluginDisableEvent e) {
+      if(!e.getPlugin().getName().equals(plugin.getName())) return;
       unregisterEnchantments();
    }
 
    //Fishing support ig
-   @EventHandler void onFish(PlayerFishEvent e) {
+   @EventHandler
+   void onFish(PlayerFishEvent e) {
       Random random = ThreadLocalRandom.current();
       if(!(e.getCaught() instanceof Item)) return;
       Item item = (Item) e.getCaught();
       ItemStack it = item.getItemStack();
       if(it.getType() != Material.ENCHANTED_BOOK) {
          ItemMeta im = it.getItemMeta();
-         if(im==null)return;
+         if(im == null) return;
          for(DynamicEnchantment enchantment : enchants) {
-            if(!enchantment.canEnchantItem(it))continue;
-            if(((random.nextInt(100)+1)/100d) > enchantment.getChance()) continue;
+            if(!enchantment.canEnchantItem(it)) continue;
+            if(((random.nextInt(100) + 1) / 100d) > enchantment.getChance()) continue;
             im.addEnchant(enchantment.getEnchantment(), enchantment.getStartLevel() +
-               (enchantment.getMaxLevel() > enchantment.getStartLevel() ? random.nextInt(enchantment.getMaxLevel()-1) : 0), true);
+               (enchantment.getMaxLevel() > enchantment.getStartLevel() ? random.nextInt(enchantment.getMaxLevel() - 1) : 0), true);
          }
          it.setItemMeta(im);
          updateEnchants(it);
@@ -123,45 +126,48 @@ public class DynamicEnchantmentHandler implements Listener {
       }
       EnchantmentStorageMeta storage = (EnchantmentStorageMeta) it.getItemMeta();
       for(DynamicEnchantment enchantment : enchants) {
-         if(((random.nextInt(100)+1)/100d) > enchantment.getChance()) continue;
+         if(((random.nextInt(100) + 1) / 100d) > enchantment.getChance()) continue;
          storage.addStoredEnchant(enchantment.getEnchantment(), enchantment.getStartLevel() +
-            (enchantment.getMaxLevel() > enchantment.getStartLevel() ? random.nextInt(enchantment.getMaxLevel()-1) : 0), true);
+            (enchantment.getMaxLevel() > enchantment.getStartLevel() ? random.nextInt(enchantment.getMaxLevel() - 1) : 0), true);
       }
       it.setItemMeta(storage);
       updateEnchants(it);
       item.setItemStack(it);
    }
 
-   @EventHandler void onEnchantItem(EnchantItemEvent e) {
+   @EventHandler
+   void onEnchantItem(EnchantItemEvent e) {
       Random random = ThreadLocalRandom.current();
-      A:for(DynamicEnchantment enchantment : enchants) {
+      A:
+      for(DynamicEnchantment enchantment : enchants) {
          if(enchantment.getLevels() == null) continue;
-         if(!enchantment.canEnchantItem(e.getItem()))continue;
+         if(!enchantment.canEnchantItem(e.getItem())) continue;
          if(!enchantment.getLevels().accepts(e.getExpLevelCost())) continue;
-         for(Enchantment enchantment1 : e.getEnchantsToAdd().keySet()) if(enchantment.conflictsWith(enchantment1))continue A;
-         if(((random.nextInt(100)+1)/100d) > enchantment.getChance()) continue;
+         for(Enchantment enchantment1 : e.getEnchantsToAdd().keySet())
+            if(enchantment.conflictsWith(enchantment1)) continue A;
+         if(((random.nextInt(100) + 1) / 100d) > enchantment.getChance()) continue;
          e.getEnchantsToAdd().put(enchantment.getEnchantment(), enchantment.getStartLevel() +
-            (enchantment.getMaxLevel() > enchantment.getStartLevel() ? random.nextInt(enchantment.getMaxLevel()-1) : 0));
+            (enchantment.getMaxLevel() > enchantment.getStartLevel() ? random.nextInt(enchantment.getMaxLevel() - 1) : 0));
       }
       Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> updateEnchants(e.getItem()));
    }
 
    public void updateEnchants(ItemStack item) {
-      if(!shouldUpdate(item))return;
+      if(!shouldUpdate(item)) return;
       ItemMeta im = item.getItemMeta();
-      if(im==null)return;
+      if(im == null) return;
       List<String> lore = new ArrayList<>();
       if(im.getLore() != null)
          for(String s : im.getLore()) {
             if(!s.startsWith("§-§")) lore.add(s);
          }
       im.getEnchants().forEach((e, l) -> {
-         String ench = "§-" + fixName(true,e) + (l == 1 && e.getMaxLevel() == 1 ? " " + EnchantUtil.romanFromInt(l) : "");
+         String ench = "§-" + fixName(true, e) + (l == 1 && e.getMaxLevel() == 1 ? " " + EnchantUtil.romanFromInt(l) : "");
          if(!lore.contains(ench)) lore.add(ench);
       });
       if(im instanceof EnchantmentStorageMeta) {
          ((EnchantmentStorageMeta) im).getStoredEnchants().forEach((e, l) -> {
-            String ench = "§-" + fixName(true,e) + (l == 1 && e.getMaxLevel() == 1 ? " " + EnchantUtil.romanFromInt(l) : "");
+            String ench = "§-" + fixName(true, e) + (l == 1 && e.getMaxLevel() == 1 ? " " + EnchantUtil.romanFromInt(l) : "");
             if(!lore.contains(ench)) lore.add(ench);
          });
       }
@@ -173,13 +179,13 @@ public class DynamicEnchantmentHandler implements Listener {
    public boolean shouldUpdate(ItemStack item) {
       if(item == null) return false;
       ItemMeta im = item.getItemMeta();
-      if(im==null)return false;
+      if(im == null) return false;
       List<String> lore = im.getLore() == null ? new ArrayList<>() : im.getLore();
       boolean shouldUpdate = false;
       for(Map.Entry<Enchantment, Integer> enchantmentIntegerEntry : im.getEnchants().entrySet()) {
          Enchantment e = enchantmentIntegerEntry.getKey();
          int l = enchantmentIntegerEntry.getValue();
-         String ench = "§-" + fixName(true,e) + (l == 1 && e.getMaxLevel() == 1 ? " " + EnchantUtil.romanFromInt(l) : "");
+         String ench = "§-" + fixName(true, e) + (l == 1 && e.getMaxLevel() == 1 ? " " + EnchantUtil.romanFromInt(l) : "");
          if(!lore.contains(ench)) {
             shouldUpdate = true;
             break;
@@ -189,7 +195,7 @@ public class DynamicEnchantmentHandler implements Listener {
          for(Map.Entry<Enchantment, Integer> enchantmentIntegerEntry : ((EnchantmentStorageMeta) im).getStoredEnchants().entrySet()) {
             Enchantment e = enchantmentIntegerEntry.getKey();
             int l = enchantmentIntegerEntry.getValue();
-            String ench = "§-" + fixName(true,e) + (l == 1 && e.getMaxLevel() == 1 ? " " + EnchantUtil.romanFromInt(l) : "");
+            String ench = "§-" + fixName(true, e) + (l == 1 && e.getMaxLevel() == 1 ? " " + EnchantUtil.romanFromInt(l) : "");
             if(!lore.contains(ench)) {
                shouldUpdate = true;
                break;
@@ -199,7 +205,8 @@ public class DynamicEnchantmentHandler implements Listener {
       return shouldUpdate;
    }
 
-   @EventHandler void onAnvil(PrepareAnvilEvent e) {
+   @EventHandler
+   void onAnvil(PrepareAnvilEvent e) {
       AnvilInventory inventory = e.getInventory();
       ItemStack slot1 = inventory.getItem(0);
       ItemStack slot2 = inventory.getItem(1);
@@ -212,12 +219,13 @@ public class DynamicEnchantmentHandler implements Listener {
          im2.getEnchants().forEach((en, l) -> {
             DynamicEnchantment d = fromEnchantment(en);
             if(enchants.containsKey(en)) {
-               if(enchants.get(en).intValue() == l && (d == null || d.allowsAnvil())) enchants.put(en, (l + 1) <= en.getMaxLevel() ? l + 1 : l);
+               if(enchants.get(en).intValue() == l && (d == null || d.allowsAnvil()))
+                  enchants.put(en, (l + 1) <= en.getMaxLevel() ? l + 1 : l);
                else if(enchants.get(en) < l) enchants.put(en, l);
             } else enchants.put(en, l);
          });
-         if(result != null && result.hasItemMeta() && (!im1.getEnchants().entrySet().containsAll(enchants.entrySet())||
-            (im1.hasDisplayName()&&inventory.getRenameText()!=null&&inventory.getRenameText().equals(im1.getDisplayName())))) {
+         if(result != null && result.hasItemMeta() && (!im1.getEnchants().entrySet().containsAll(enchants.entrySet()) ||
+            (im1.hasDisplayName() && inventory.getRenameText() != null && inventory.getRenameText().equals(im1.getDisplayName())))) {
             ItemMeta im = result.getItemMeta();
             im.getEnchants().keySet().forEach(im::removeEnchant);
             result.setItemMeta(im);
@@ -249,23 +257,23 @@ public class DynamicEnchantmentHandler implements Listener {
 
    public String fixName(boolean color, Enchantment enchantment) {
       for(DynamicEnchantment enchant : getEnchantments())
-         if(enchant.getEnchantment().equals(enchantment)) return (!enchant.getName().startsWith("§")&&color ? "§7":"")+enchant.getName();
-      return (color?"§7":"") + EnchantUtil.ENCHANT_NAMES_CACHE.getOrDefault(enchantment, EnchantUtil.getNameFromCaps(enchantment.getName()));
+         if(enchant.getEnchantment().equals(enchantment))
+            return (!enchant.getName().startsWith("§") && color ? "§7" : "") + enchant.getName();
+      return (color ? "§7" : "") + EnchantUtil.ENCHANT_NAMES_CACHE.getOrDefault(enchantment, EnchantUtil.getNameFromCaps(enchantment.getName()));
    }
-
 
 
    public void load(JavaPlugin plugin) {
       if(COMPILER == null) {
          try {
             COMPILER = DynamicJavaCompiler.newInstance(plugin.getClass().getClassLoader())
-               .useOptions("-cp", ((File)getFile.get(plugin)).getPath() + ":" + System.getProperty("java.class.path"));
+               .useOptions("-cp", ((File) getFile.get(plugin)).getPath() + ":" + System.getProperty("java.class.path"));
          } catch (IllegalAccessException e) {
             e.printStackTrace();
          }
       }
       try {
-         enchantWrapper = COMPILER.compile(getClass().getPackage().getName()+".DynamicEnchant", DynamicEnchantAsString.DYNAMIC_ENCHANTMENT);
+         enchantWrapper = COMPILER.compile(getClass().getPackage().getName() + ".DynamicEnchant", DynamicEnchantAsString.DYNAMIC_ENCHANTMENT);
       } catch (Exception e) {
          e.printStackTrace();
       }
@@ -279,9 +287,9 @@ public class DynamicEnchantmentHandler implements Listener {
    }
 
    public DynamicEnchantment getDynamicEnchantment(String name) {
-      for (DynamicEnchantment ench : getEnchantments()) {
-         if (ench.getName().equalsIgnoreCase(name) ||
-            ench.getLocalizedName().equalsIgnoreCase(ChatColor.stripColor(name))||
+      for(DynamicEnchantment ench : getEnchantments()) {
+         if(ench.getName().equalsIgnoreCase(name) ||
+            ench.getLocalizedName().equalsIgnoreCase(ChatColor.stripColor(name)) ||
             ench.getEnchantment().getName().equalsIgnoreCase(ChatColor.stripColor(name))) {
             return ench;
          }
@@ -290,8 +298,8 @@ public class DynamicEnchantmentHandler implements Listener {
    }
 
    public void addDynamicEnchantments(DynamicEnchantment... enchantments) {
-      for (DynamicEnchantment e : enchantments) {
-         if (!getEnchantments().contains(e)) {
+      for(DynamicEnchantment e : enchantments) {
+         if(!getEnchantments().contains(e)) {
             getEnchantments().add(e);
             registerBukkitEnchantment(e);
          }
@@ -299,7 +307,7 @@ public class DynamicEnchantmentHandler implements Listener {
    }
 
    private void registerBukkitEnchantment(DynamicEnchantment dynamicEnchantment) {
-      if(enchantWrapper == null)  {
+      if(enchantWrapper == null) {
          load(plugin);
          if(enchantWrapper == null) return;
       }
