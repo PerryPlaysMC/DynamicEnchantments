@@ -1,14 +1,43 @@
-# DynamicEnchants
+# DynamicEnchantments
 
 Example:
 ```java
+
+DynamicEnchantmentHandler handler;
+
+//Setup
 @Override
 public void onEnable() {
-	DynamicEnchantmentHandler handler = new DynamicEnchantmentHandler(this);
-	new DynamicEnchantment(handler,("&bHello there"), Levels.LEVELS_25_30, 5, 1)
-		.allowAnvil();//Enables anvil support (combining levels)
-	//Set Levels to null to disable EnchantingTable support
+   this.handler = new DynamicEnchantmentHandler(this);
+   new DynamicEnchantment(handler,("&bHello there"), Levels.LEVELS_25_30, 5, 1)
+      .allowAnvil();//Enables anvil support (combining levels)
+   //Set Levels to null to disable EnchantingTable support
 }
+
+
+
+//Usage
+@EventHandler 
+public void onAttack(EntityDamageByEntityEvent e){
+   if(!(e.getDamager()instanceof LivingEntity)) return;
+   LivingEntity entity=(LivingEntity)e.getDamager();
+   ItemStack item=entity.getEquipment().getItemInMainHand();
+   if(hasEnchant(item,getDynamicEnchantment("hello_there")))
+      e.getEntity().setVelocity(new Vector(0,1,0));
+   //OR
+   if(item.containsEnchantment(getDynamicEnchantment("hello_there").getEnchantment()))
+      e.getEntity().setVelocity(new Vector(0,1,0));
+   //OR
+   if(item.getItemMeta().hasEnchant(getDynamicEnchantment("hello_there").getEnchantment()))
+      e.getEntity().setVelocity(new Vector(0,1,0));
+   //OR
+   if(item.getItemMeta().hasEnchant(Enchantment.getByName("hello_there")))
+      e.getEntity().setVelocity(new Vector(0,1,0));
+
+   //You do not need all 4 if statements, just one of them.
+}
+
+
 ```
 
 ## Constructors
@@ -31,6 +60,3 @@ It will also update all Enchantments to use the Lore to display the enchantments
 
 # TO-DO?
 - [ ] Add Enchantment name coloring for rarity? (maybe, might do that one day)
-
-
-
