@@ -60,10 +60,10 @@ DynamicEnchantment(DynamicEnchantmentHandler enchantmentHandler, String name, Le
 <dependency>
    <groupId>com.github.PerryPlaysMC</groupId>
    <artifactId>DynamicEnchantments</artifactId>
-   <version>1.0.0-RELEASE</version>
+   <version>v1.0.0-RELEASE</version>
 </dependency>
  ```
- [![](https://jitpack.io/v/PerryPlaysMC/DynamicEnchantments.svg)](https://jitpack.io/#PerryPlaysMC/DynamicEnchantments)
+[![](https://jitpack.io/v/PerryPlaysMC/DynamicEnchantments.svg)](https://jitpack.io/#PerryPlaysMC/DynamicEnchantments)
 
 # How it works
 It compiles a class at runtime called "DynamicEnchant" and uses this class as a wrapper for the [org.bukkit.enchantment.Enchantment](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/enchantments/Enchantment.html) class
