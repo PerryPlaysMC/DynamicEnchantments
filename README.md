@@ -50,6 +50,21 @@ DynamicEnchantment(DynamicEnchantmentHandler enchantmentHandler, String name, Le
 DynamicEnchantment(DynamicEnchantmentHandler enchantmentHandler, String name, Levels levels, int maxLevel, float chance, EnchantTarget target, boolean isTreasure, boolean isCursed, Enchantment... conflicts)
 ```
 
+# Add via maven
+```maven
+<repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+</repository>
+
+<dependency>
+   <groupId>com.github.PerryPlaysMC</groupId>
+   <artifactId>DynamicEnchantments</artifactId>
+   <version>v1.0.0-RELEASE</version>
+</dependency>
+ ```
+[![](https://jitpack.io/v/PerryPlaysMC/DynamicEnchantments.svg)](https://jitpack.io/#PerryPlaysMC/DynamicEnchantments)
+
 # How it works
 It compiles a class at runtime called "DynamicEnchant" and uses this class as a wrapper for the [org.bukkit.enchantment.Enchantment](https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/enchantments/Enchantment.html) class
 Then it uses the default bukkit system for enchantment registering.
