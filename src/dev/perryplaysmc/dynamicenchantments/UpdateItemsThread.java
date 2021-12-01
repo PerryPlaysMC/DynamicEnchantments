@@ -62,6 +62,26 @@ public class UpdateItemsThread extends Thread{
             e.printStackTrace();
          }
       }
+      A:for(Player player : Bukkit.getOnlinePlayers()) {
+         if((player.getOpenInventory().getTopInventory().getSize() % 9 == 0 || player.getOpenInventory().getTopInventory().getSize() % 5 == 0)) {
+            for(int i = 0; i < player.getOpenInventory().getTopInventory().getContents().length; i++) {
+               if(!player.isOnline())continue A;
+               ItemStack item = player.getOpenInventory().getTopInventory().getItem(i);
+               if(item == null) continue;
+               handler.clearLoreEnchantments(item);
+               if(player.getOpenInventory().getTopInventory().getItem(i)==null)continue;
+               player.getOpenInventory().getTopInventory().setItem(i,item);
+            }
+         }
+         for(int i = 0; i < player.getInventory().getContents().length; i++) {
+            if(!player.isOnline())continue A;
+            ItemStack item = player.getInventory().getItem(i);
+            if(item == null) continue;
+            handler.clearLoreEnchantments(item);
+            if(player.getInventory().getItem(i)==null)continue;
+            player.getInventory().setItem(i,item);
+         }
+      }
    }
 
    private int count(String filterName) {
