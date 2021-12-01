@@ -58,9 +58,9 @@ DynamicEnchantment(DynamicEnchantmentHandler enchantmentHandler, String name, Le
 </repository>
 
 <dependency>
-   <groupId>com.github.PerryPlaysMC</groupId>
-   <artifactId>DynamicEnchantments</artifactId>
-   <version>v1.0.0-RELEASE</version>
+    <groupId>com.github.PerryPlaysMC</groupId>
+    <artifactId>DynamicEnchantments</artifactId>
+    <version>v1.0.1-RELEASE</version>
 </dependency>
  ```
 [![](https://jitpack.io/v/PerryPlaysMC/DynamicEnchantments.svg)](https://jitpack.io/#PerryPlaysMC/DynamicEnchantments)
