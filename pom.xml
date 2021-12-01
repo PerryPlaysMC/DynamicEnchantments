@@ -6,7 +6,7 @@
 
     <groupId>dev.perryplaysmc.dynamicenchantments</groupId>
     <artifactId>DynamicEnchantments</artifactId>
-    <version>v1.0-RELEASE</version>
+    <version>v1.0.1-RELEASE</version>
 
     <build>
         <plugins>
