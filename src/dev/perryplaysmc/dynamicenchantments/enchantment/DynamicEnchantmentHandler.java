@@ -177,14 +177,15 @@ public class DynamicEnchantmentHandler implements Listener {
    }
 
    public void clearLoreEnchantments(ItemStack item) {
-      if(!shouldUpdate(item)) return;
       ItemMeta im = item.getItemMeta();
       if(im == null) return;
       List<String> lore = new ArrayList<>();
-      if(im.getLore() != null)
+      if(im.getLore() != null) {
          for(String s : im.getLore()) {
             if(!s.startsWith("§-§")) lore.add(s);
          }
+         if(lore.size() == im.getLore().size()) return;
+      }
       im.removeItemFlags(ItemFlag.HIDE_ENCHANTS);
       im.setLore(lore);
       item.setItemMeta(im);
